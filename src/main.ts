@@ -10,6 +10,6 @@ async function bootstrap() {
     keys: ['secret-key'],
   }));
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  await app.listen(3000);
+  await app.listen(process.env.PORT);
 }
 bootstrap();
