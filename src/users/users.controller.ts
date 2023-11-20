@@ -2,21 +2,21 @@ import {
   Body,
   Param,
   Controller,
-  Post,
   Get,
   Delete,
   Patch,
   Query,
-  Session,
+  Post,
+  NotFoundException,
+  HttpException,
   HttpCode,
-  UnauthorizedException,
-  UseGuards,
+  HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
-import { Serialize } from 'src/users/decorators/serialize.decorator';
+import { Serialize } from './decorators/serialize.decorator';
 
 @Controller('api/v1/users')
 @Serialize(UserDto)
@@ -25,20 +25,32 @@ export class UsersController {
     private readonly userService: UsersService,
   ) {}
 
-  @Get('/:id')
-  findOne(@Param('id') id: number) {
-    return this.userService.findOne(id);
+  @Post()
+  create(createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
   }
 
-  @Post('logout')
-  @HttpCode(200)
-  logout(@Session() session: any) {
-    session.userId = undefined;
+  @Get('/:id')
+  async findOne(@Param('id') id: number) {
+    const user = await this.userService.findOne(id);
+    if (!user) {
+      throw new NotFoundException(`No user found with the id ${id}`);
+    }
+    return user;
   }
 
   @Get()
-  find(@Query('email') email: string) {
-    return this.userService.find(email);
+  findByEmail(@Query('email') email: string) {
+    return this.userService.findByEmail(email);
+  }
+
+  @Get()
+  async findAll() {
+    const users = await this.userService.findAll();
+    if (!users || !users.length) {
+      throw new HttpException('No users found', HttpStatus.NO_CONTENT);
+    }
+    return users;
   }
 
   @Patch('/:id')

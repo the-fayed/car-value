@@ -10,9 +10,10 @@ import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { Serialize } from 'src/users/decorators/serialize.decorator';
-import { CurrentUser } from './decorators/current-user.decorator';
-import { AuthGuard } from './guards/auth.guard';
+import { AuthGuard } from '../common/guards/auth.guard';
 import { UserDto } from './dto/user.dto';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { User } from 'src/users/user.entity';
 
 @Controller('api/v1/auth')
 @Serialize(UserDto)
@@ -36,7 +37,7 @@ export class AuthController {
 
   @Get('whoami')
   @UseGuards(AuthGuard)
-  whoami(@CurrentUser() id: number) {
-    return this.authService.whoami(id);
+  whoami(@CurrentUser() user: User) {
+    return user;
   }
 }
