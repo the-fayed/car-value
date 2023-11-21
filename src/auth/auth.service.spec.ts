@@ -11,7 +11,7 @@ describe('AuthService', () => {
 
   const users: User[] = [];
   TempUserService = {
-    find: (email: string) => {
+    findByEmail: (email: string) => {
       const user = users.filter((item) => item.email === email);
       return Promise.resolve(user[0]);
     },
@@ -69,7 +69,7 @@ describe('AuthService', () => {
 
   it('should throw an error when signing in with unused email', async () => {
     await expect(
-      service.login({ email: 'error-test@email.com', password: 'test-password' }),
+      service.login('error-test@email.com','test-password' ),
     ).rejects.toThrowError(
       new UnauthorizedException('User not found, please sign up first.'),
     );
@@ -78,7 +78,7 @@ describe('AuthService', () => {
   it('should throw an error when using wrong password', async () => {
     await service.signup('test3@email.com', 'test-password', 'test user');
     await expect(
-      service.login({ email: 'test3@email.com', password: 'not-test-password' }),
+      service.login('test3@email.com', 'not-test-password'),
     ).rejects.toThrowError(
       new UnauthorizedException('Invalid email or password.'),
     );
@@ -86,10 +86,8 @@ describe('AuthService', () => {
 
   it('should login successfully', async () => {
     await service.signup('test4@email.com', 'testPassword', 'test user');
-    const user = await service.login({
-      email: 'test4@email.com',
-      password: 'testPassword',
-    });
+    const user = await service.login('test4@email.com','testPassword'
+    );
     expect(user.access_token).toBeDefined();
   });
 });

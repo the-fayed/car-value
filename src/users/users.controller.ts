@@ -21,13 +21,15 @@ import { Serialize } from './decorators/serialize.decorator';
 @Controller('api/v1/users')
 @Serialize(UserDto)
 export class UsersController {
-  constructor(
-    private readonly userService: UsersService,
-  ) {}
+  constructor(private readonly userService: UsersService) {}
 
   @Post()
   create(createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+    return this.userService.create(
+      createUserDto.email,
+      createUserDto.password,
+      createUserDto.name,
+    );
   }
 
   @Get('/:id')

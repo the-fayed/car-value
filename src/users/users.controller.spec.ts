@@ -4,7 +4,12 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { HttpException, HttpStatus, NotFoundException, Res } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  NotFoundException,
+  Res,
+} from '@nestjs/common';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -36,7 +41,7 @@ describe('UsersController', () => {
       },
       findAll: () => {
         return Promise.resolve(users);
-      }
+      },
     };
     users = [];
     const module: TestingModule = await Test.createTestingModule({
@@ -86,13 +91,16 @@ describe('UsersController', () => {
       email: 'test5@email.com',
       password: 'test-password',
       name: 'test user',
-    })
+    });
     const users = await controller.findAll();
     expect(users).toBeDefined();
     expect(users[0].id).not.toEqual(users[1].id);
   });
 
-  it('should threw no content exception if no users found',async () => {
-    await expect(controller.findAll()).rejects.toThrow(HttpException)
-  })
+  it('should threw no content exception if no users found', async () => {
+    await expect(controller.findAll()).rejects.toThrowError(
+      new HttpException('No users found', HttpStatus.NO_CONTENT
+      ),
+    );
+  });
 });
