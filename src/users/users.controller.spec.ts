@@ -3,7 +3,6 @@ import * as bcrypt from 'bcrypt';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
 import {
   HttpException,
   HttpStatus,
@@ -18,15 +17,12 @@ describe('UsersController', () => {
   beforeEach(async () => {
     let users: User[] = [];
     fakeUserService = {
-      create: (createUserDto: CreateUserDto) => {
+      create: (email: string, password: string, name: string) => {
         const user = {
           id: Math.floor(Math.random() * 99999),
-          email: createUserDto.email,
-          name: createUserDto.name,
-          password: bcrypt.hashSync(
-            createUserDto.password,
-            bcrypt.genSaltSync(12),
-          ),
+          email: email,
+          name: name,
+          password: bcrypt.hashSync(password, bcrypt.genSaltSync(12)),
         } as User;
         users.push(user);
         return Promise.resolve(user);
@@ -99,8 +95,7 @@ describe('UsersController', () => {
 
   it('should threw no content exception if no users found', async () => {
     await expect(controller.findAll()).rejects.toThrowError(
-      new HttpException('No users found', HttpStatus.NO_CONTENT
-      ),
+      new HttpException('No users found', HttpStatus.NO_CONTENT),
     );
   });
 });
