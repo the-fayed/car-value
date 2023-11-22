@@ -40,7 +40,7 @@ describe('Authentication system (e2e)', () => {
         });
     });
 
-    it('should throw bad request error if email is in use', () => {
+    it('should throw bad request error if email is in use', async () => {
       return request(app.getHttpServer())
         .post('/api/v1/auth/signup')
         .send({
