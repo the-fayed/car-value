@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsLatitude, IsLongitude, IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator';
 
 export class CreateReportDto {
   @IsNumber()
@@ -15,14 +15,16 @@ export class CreateReportDto {
 
   @IsNumber()
   @IsNotEmpty()
+  @Min(1930)
+  @Max(new Date().getFullYear())
   year: number;
 
   @IsNotEmpty()
-  @IsNumber()
+  @IsLongitude()
   lng: number;
 
   @IsNotEmpty()
-  @IsNumber()
+  @IsLatitude()
   lat: number;
 
   @IsNotEmpty()
