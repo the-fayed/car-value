@@ -9,6 +9,7 @@ import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { Serialize } from '../users/decorators/serialize.decorator';
 import { UserDto } from './dto/user.dto';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('api/v1/auth')
 @Serialize(UserDto)
@@ -16,6 +17,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
+  @Public()
   async signup(@Body() signupDto: SignUpDto) {
     return this.authService.signup(
       signupDto.email,
@@ -24,6 +26,7 @@ export class AuthController {
     );
   }
 
+  @Public()
   @Post('login')
   @HttpCode(200)
   login(@Body() loginDto: LoginDto) {

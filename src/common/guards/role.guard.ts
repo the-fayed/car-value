@@ -2,12 +2,14 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role } from 'src/common/interfaces/roles.enum';
 import { ROLES_KEY } from '../decorators/roles.decorator';
+import { JwtService } from '@nestjs/jwt';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private reflector: Reflector,private readonly jwtService: JwtService, private readonly userService: UsersService) {}
 
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -15,8 +17,12 @@ export class RoleGuard implements CanActivate {
     if (!requiredRoles) {
       return true;
     }
-
-    const { user } = context.switchToHttp().getRequest();
+    const [type, token] = context.switchToHttp().getRequest().headers.authorization.split(' ');
+    const payload = await this.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
+    if (!payload){
+      return true
+    }
+    const user = await this.userService.findOne(payload.sub.id);
     return requiredRoles.some((role) => user?.role.includes(role));
   }
 }

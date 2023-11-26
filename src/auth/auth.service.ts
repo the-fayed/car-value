@@ -14,17 +14,14 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signup(email: string, userPassword: string, name: string) {
+  async signup(email: string, password: string, name: string) {
     // Check if email already in use
     const exist = await this.userService.findByEmail(email);
     if (exist) {
       throw new BadRequestException('Email already in use');
     }
-    // hash user password
-    const salt = await bcrypt.genSalt(12);
-    const hash = await bcrypt.hash(userPassword, salt);
     // create user and save it
-    const user = await this.userService.create(email, hash, name);
+    const user = await this.userService.signup(email, password, name);
     const payload = {
       username: user.email,
       sub: {
@@ -33,8 +30,10 @@ export class AuthService {
     };
     // returning result
     return {
-      ...user,
-      access_token: this.jwtService.sign(payload),
+      response: {
+        access_token: this.jwtService.sign(payload),
+        user: user,
+      },
     };
   }
 
@@ -43,10 +42,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('User not found, please sign up first.');
     }
-    const passwordMatch = await bcrypt.compare(
-      password,
-      user?.password,
-    );
+    const passwordMatch = await bcrypt.compare(password, user?.password);
     if (!passwordMatch) {
       throw new UnauthorizedException('Invalid email or password.');
     }
@@ -57,8 +53,10 @@ export class AuthService {
       },
     };
     return {
-      ...user,
-      access_token: this.jwtService.sign(payload),
+      response: {
+        access_token: this.jwtService.sign(payload),
+        user: { ...user },
+      },
     };
   }
 }
