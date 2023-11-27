@@ -1,14 +1,13 @@
 import { Module, ValidationPipe } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { APP_PIPE } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ReportsModule } from './reports/reports.module';
 import { User } from './users/user.entity';
 import { Report } from './reports/report.entity';
-import { RoleGuard } from './common/guards/role.guard';
 
 @Module({
   imports: [
@@ -34,17 +33,13 @@ import { RoleGuard } from './common/guards/role.guard';
     UsersModule,
     ReportsModule,
     AuthModule,
-    JwtModule
+    JwtModule,
   ],
   providers: [
     {
       provide: APP_PIPE,
       useValue: new ValidationPipe({ whitelist: true }),
     },
-    {
-      provide: APP_GUARD,
-      useClass: RoleGuard,
-    }
   ],
 })
 export class AppModule {}

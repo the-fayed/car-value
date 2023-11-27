@@ -14,8 +14,8 @@ import { User } from 'src/users/user.entity';
 import { Serialize } from 'src/users/decorators/serialize.decorator';
 import { ReportDto } from './dto/report.dto';
 import { ApproveReportDto } from './dto/approve-report.dto';
-import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/interfaces/roles.enum';
+import { Auth } from 'src/common/decorators/auth.decorator';
 
 @Controller('api/v1/reports')
 export class ReportsController {
@@ -29,9 +29,10 @@ export class ReportsController {
   }
 
   @Patch('/:id')
-  @Roles(Role.Admin)
+  @Auth(Role.Admin)
   @Serialize(ReportDto)
-  update(@Param('id') id: number, @Body() approveReportDto: ApproveReportDto) {
-    return this.reportService.update(id, approveReportDto);
+  update(@Param('id') id: number, @Body() approveReportDto: ApproveReportDto, @CurrentUser() user: User) {
+    console.log(user);
+    // return this.reportService.update(id, approveReportDto);
   }
 }

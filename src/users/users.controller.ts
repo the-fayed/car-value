@@ -17,9 +17,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { Serialize } from './decorators/serialize.decorator';
-import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/interfaces/roles.enum';
-import { AuthGuard } from 'src/common/guards/auth.guard';
+import { Auth } from 'src/common/decorators/auth.decorator';
 
 @Controller('api/v1/users')
 @Serialize(UserDto)
@@ -27,8 +26,7 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Post()
-  @UseGuards(AuthGuard)
-  @Roles(Role.Admin)
+  @Auth(Role.Admin)
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(
       createUserDto.email,

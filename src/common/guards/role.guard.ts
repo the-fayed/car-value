@@ -7,7 +7,7 @@ import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
-  constructor(private reflector: Reflector,private readonly jwtService: JwtService, private readonly userService: UsersService) {}
+  constructor(private reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
@@ -17,12 +17,8 @@ export class RoleGuard implements CanActivate {
     if (!requiredRoles) {
       return true;
     }
-    const [type, token] = context.switchToHttp().getRequest().headers.authorization.split(' ');
-    const payload = await this.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
-    if (!payload){
-      return true
-    }
-    const user = await this.userService.findOne(payload.sub.id);
+    const { user } = context.switchToHttp().getRequest();
+    console.log(user);
     return requiredRoles.some((role) => user?.role.includes(role));
   }
 }

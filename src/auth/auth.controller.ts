@@ -16,8 +16,8 @@ import { Public } from 'src/common/decorators/public.decorator';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('signup')
   @Public()
+  @Post('signup')
   async signup(@Body() signupDto: SignUpDto) {
     return this.authService.signup(
       signupDto.email,
