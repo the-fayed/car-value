@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ReportsService } from './reports.service';
@@ -16,10 +18,17 @@ import { ReportDto } from './dto/report.dto';
 import { ApproveReportDto } from './dto/approve-report.dto';
 import { Role } from 'src/common/interfaces/roles.enum';
 import { Auth } from 'src/common/decorators/auth.decorator';
+import { GetEstimateDto } from './dto/get-estimate.dto';
 
 @Controller('api/v1/reports')
 export class ReportsController {
   constructor(private readonly reportService: ReportsService) {}
+
+  @Get()
+  getEstimate(@Query() getEstimateDto: GetEstimateDto) {
+    return getEstimateDto;
+    // return this.reportService.getEstimate(getEstimateDto);
+  }
 
   @Post()
   @Serialize(ReportDto)
@@ -33,6 +42,6 @@ export class ReportsController {
   @Serialize(ReportDto)
   update(@Param('id') id: number, @Body() approveReportDto: ApproveReportDto, @CurrentUser() user: User) {
     console.log(user);
-    // return this.reportService.update(id, approveReportDto);
+    return this.reportService.update(id, approveReportDto);
   }
 }
